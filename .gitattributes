@@ -1,0 +1,3 @@
+# As amostras sintéticas têm sha256 no manifesto: o Git não pode trocar o fim de linha delas,
+# senão o checkout no Linux (CI) muda os bytes e a bronze recusa o arquivo, com razão.
+seeds/amostra_sintetica/*.csv -text
