@@ -39,6 +39,7 @@ arredondados (constitution).
 - [x] T23 Job definido como código (`databricks.yml`): schema e Volume no Unity Catalog + Job de 4 tarefas encadeadas (landing → bronze → silver → gold) em serverless, com o lote passado por *task values* e o Job falhando se a reconciliação não bater (26/10)
 - [x] T24 Rodar o Job e registrar a reconciliação e os tempos — 2 execuções verdes; **12 de 12** em `workspace.lab.reconciliacao_fatia1`; 2ª execução idempotente (bronze sem duplicar, MERGE 0/0/0/0) (26/10)
 - [x] T25 CI: GitHub Actions (`.github/workflows/ci.yml`) em todo push e PR: Java 17 + `uv sync --frozen`, `pytest`, prova por mutação e a fatia 1 ponta a ponta com a amostra sintética; simulado antes num contêiner Linux limpo (26/10)
+- [ ] T26 Exercício de performance (`databricks/90_performance`, fora do Job, dados de `spark.range`): arquivos lidos antes/depois de `OPTIMIZE ZORDER BY` e com liquid clustering, broadcast × shuffle lido no `explain()`, skew com e sem *salting* provando o mesmo resultado; medidas em `workspace.lab.perf_medidas` — lógica do join e do skew conferida no contêiner com 1 mi de linhas (BroadcastHashJoin 2 Exchange × SortMergeJoin 3; maior partição/mediana 14,7× → 3,2×; 0 clientes diferentes). Estimado: 45 min
 
 ## Estimado × realizado
 
