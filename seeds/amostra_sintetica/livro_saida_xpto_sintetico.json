@@ -1,0 +1,54 @@
+{
+  "arquivo": "livro_saida_xpto_sintetico.csv",
+  "linhas": 95,
+  "sha256": "8d5461c3ce1c9520df28fdd87ca6f5f92944b721bcd8c3ac369c79d1704093d8",
+  "revenda": "XPTO",
+  "data_inicial": "2026-08-01",
+  "data_final": "2026-10-31",
+  "consulta": "AMOSTRA SINTETICA LIVRO DE SAIDA (seed=42) — SEM DADO REAL",
+  "exportado_em": "2026-10-23T16:50:00",
+  "segundos_exportacao": 0.01,
+  "segundos_sql_controles": 0.01,
+  "competencias": 3,
+  "controles_mensais": {
+    "2026-08": {
+      "ano": 2026,
+      "mes": 8,
+      "itens": 30,
+      "nfs_distintas": 30,
+      "nfs_so_numero": 30,
+      "vlr_produto": "853354.37",
+      "vlr_icms": "153603.81",
+      "vlr_pis": "14080.31",
+      "vlr_cofins": "64854.94",
+      "vlr_total_nota_calc": "853354.37",
+      "vlr_total_double_bruto": 853354.37
+    },
+    "2026-09": {
+      "ano": 2026,
+      "mes": 9,
+      "itens": 30,
+      "nfs_distintas": 30,
+      "nfs_so_numero": 29,
+      "vlr_produto": "789785.31",
+      "vlr_icms": "142161.38",
+      "vlr_pis": "13031.43",
+      "vlr_cofins": "60023.68",
+      "vlr_total_nota_calc": "789785.31",
+      "vlr_total_double_bruto": 789785.31
+    },
+    "2026-10": {
+      "ano": 2026,
+      "mes": 10,
+      "itens": 30,
+      "nfs_distintas": 30,
+      "nfs_so_numero": 30,
+      "vlr_produto": "786373.19",
+      "vlr_icms": "141547.20",
+      "vlr_pis": "12975.20",
+      "vlr_cofins": "59764.35",
+      "vlr_total_nota_calc": "786373.19",
+      "vlr_total_double_bruto": 786373.19
+    }
+  }
+}

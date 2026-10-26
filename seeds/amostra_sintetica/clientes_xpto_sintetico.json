@@ -1,0 +1,66 @@
+{
+  "arquivo": "clientes_xpto_sintetico.csv",
+  "linhas": 185,
+  "sha256": "5a509b1fe70c814f2fadbab716b8c32d6f0f38b0654a1a863e917e45e07a78a1",
+  "revenda": "XPTO",
+  "consulta": "AMOSTRA SINTETICA DETERMINISTICA (seed=42) — SEM DADO REAL",
+  "exportado_em": "2026-10-23T16:00:00",
+  "segundos_exportacao": 0.01,
+  "dia_referencia": "2026-10-23",
+  "controles": {
+    "sku": {
+      "vendedores": [
+        "111",
+        "112",
+        "113",
+        "114",
+        "115",
+        "116",
+        "117",
+        "121",
+        "122",
+        "123",
+        "124",
+        "125",
+        "126",
+        "127"
+      ],
+      "clientes_ativos": 65,
+      "reconhecidos_so_telefone": 36,
+      "reconhecidos_telefone_ou_celular": 51,
+      "com_numero_repetido": 13,
+      "segundos_sql": 0.005
+    },
+    "volume": {
+      "vendedores": [
+        "701",
+        "702",
+        "703",
+        "704",
+        "705",
+        "706",
+        "707",
+        "708",
+        "709",
+        "710"
+      ],
+      "clientes_ativos": 52,
+      "reconhecidos_so_telefone": 30,
+      "reconhecidos_telefone_ou_celular": 41,
+      "com_numero_repetido": 12,
+      "segundos_sql": 0.005
+    },
+    "cobertura": {
+      "vendedores": [
+        "132",
+        "133",
+        "134"
+      ],
+      "clientes_ativos": 38,
+      "reconhecidos_so_telefone": 22,
+      "reconhecidos_telefone_ou_celular": 30,
+      "com_numero_repetido": 8,
+      "segundos_sql": 0.005
+    }
+  }
+}

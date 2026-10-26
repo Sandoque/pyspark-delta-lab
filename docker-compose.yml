@@ -1,0 +1,15 @@
+services:
+  spark:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: pyspark-delta-lab:0.1
+    volumes:
+      - ./:/work
+    # JupyterLab só no loopback da máquina: o dado é real e não sai daqui.
+    ports:
+      - "127.0.0.1:8888:8888"
+      - "127.0.0.1:4040:4040"
+    command: >
+      jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
+      --ServerApp.root_dir=/work --IdentityProvider.token=''

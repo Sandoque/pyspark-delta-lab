@@ -1,0 +1,12 @@
+# Dado real da operação: nunca versionar (constitution).
+data/
+reports/
+spark-warehouse/
+metastore_db/
+derby.log
+.ipynb_checkpoints/
+__pycache__/
+.pytest_cache/
+*.pyc
+.env
+.venv/
