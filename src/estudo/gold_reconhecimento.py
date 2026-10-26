@@ -19,6 +19,8 @@ from datetime import date
 from pyspark.sql import DataFrame
 from pyspark.sql import functions as F
 
+from estudo import destino as d
+
 
 def _pares(silver: DataFrame, campos: tuple[str, ...]) -> DataFrame:
     """(codigo_cliente, fim) para cada número presente nos campos, sem repetir."""
@@ -70,9 +72,9 @@ def calcular(silver: DataFrame, bases: DataFrame, dia: date) -> DataFrame:
 def gravar(gold: DataFrame, destino: str, dia: date) -> None:
     """Substitui só o dia: recalcular um dia não mexe nos outros."""
 
-    (
+    d.salvar(
         gold.write.format("delta").mode("overwrite")
         .option("replaceWhere", f"dia_referencia = DATE'{dia.isoformat()}'")
-        .partitionBy("dia_referencia")
-        .save(destino)
+        .partitionBy("dia_referencia"),
+        destino,
     )

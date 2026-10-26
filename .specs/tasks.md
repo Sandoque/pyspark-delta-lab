@@ -35,9 +35,9 @@ arredondados (constitution).
 
 ## Fatia 3 — Databricks Free Edition
 
-- [ ] T22 Notebooks da fatia 1 para o workspace (bronze, silver, gold), lendo a amostra sintética de um Volume e gravando no Unity Catalog
-- [ ] T23 Job de 3 tarefas encadeadas (bronze → silver → gold), definido como código (Databricks Asset Bundle)
-- [ ] T24 Rodar o Job e registrar a reconciliação (12/12) e os tempos no checkpoint
+- [x] T22 Notebooks da fatia 1 para o workspace (`databricks/00_landing` → `03_gold`), lendo a amostra sintética de um Volume e gravando no Unity Catalog; o pacote `src/estudo` grava por caminho ou por nome de tabela (`estudo/destino.py`), provado no contêiner por `tests/test_destino_tabela.py` (39 testes) (26/10)
+- [x] T23 Job definido como código (`databricks.yml`): schema e Volume no Unity Catalog + Job de 4 tarefas encadeadas (landing → bronze → silver → gold) em serverless, com o lote passado por *task values* e o Job falhando se a reconciliação não bater (26/10)
+- [x] T24 Rodar o Job e registrar a reconciliação e os tempos — 2 execuções verdes; **12 de 12** em `workspace.lab.reconciliacao_fatia1`; 2ª execução idempotente (bronze sem duplicar, MERGE 0/0/0/0) (26/10)
 - [ ] T25 CI: GitHub Actions rodando `pytest` com a amostra sintética
 
 ## Estimado × realizado

@@ -10,3 +10,6 @@ __pycache__/
 *.pyc
 .env
 .venv/
+
+# Estado local do Databricks Asset Bundle
+.databricks/

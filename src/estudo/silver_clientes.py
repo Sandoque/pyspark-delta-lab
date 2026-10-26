@@ -10,10 +10,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from delta.tables import DeltaTable
 from pyspark.sql import Column, DataFrame, SparkSession, Window
 from pyspark.sql import functions as F
 from pyspark.sql.types import BooleanType
+
+from estudo import destino as d
 
 REVENDA = "XPTO"
 
@@ -185,14 +186,14 @@ def gravar(spark: SparkSession, silver: DataFrame, destino: str) -> None:
     nenhum arquivo, e mudanças pontuais gravam só as linhas tocadas (`numTargetRowsCopied = 0`).
     """
 
-    if not DeltaTable.isDeltaTable(spark, destino):
-        silver.write.format("delta").option("delta.enableDeletionVectors", "true").save(destino)
+    if not d.existe(spark, destino):
+        d.salvar(silver.write.format("delta").option("delta.enableDeletionVectors", "true"), destino)
         return
-    tabela = DeltaTable.forPath(spark, destino)
+    tabela = d.tabela(spark, destino)
     props = tabela.detail().select("properties").first()["properties"] or {}
     if props.get("delta.enableDeletionVectors") != "true":
-        spark.sql(f"ALTER TABLE delta.`{destino}` SET TBLPROPERTIES ('delta.enableDeletionVectors' = 'true')")
-        tabela = DeltaTable.forPath(spark, destino)
+        spark.sql(f"ALTER TABLE {d.nome_sql(destino)} SET TBLPROPERTIES ('delta.enableDeletionVectors' = 'true')")
+        tabela = d.tabela(spark, destino)
     (
         tabela.alias("t")
         .merge(silver.alias("s"), "t.codigo_cliente = s.codigo_cliente")
@@ -206,9 +207,9 @@ def gravar(spark: SparkSession, silver: DataFrame, destino: str) -> None:
 def gravar_quarentena(quarentena: DataFrame, destino: str, lote: str) -> None:
     """A quarentena de um lote é substituída inteira se o lote for reprocessado."""
 
-    (
+    d.salvar(
         quarentena.write.format("delta").mode("overwrite")
         .option("replaceWhere", f"_lote = '{lote}'")
-        .option("mergeSchema", "true")
-        .save(destino)
+        .option("mergeSchema", "true"),
+        destino,
     )

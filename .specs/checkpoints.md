@@ -4,6 +4,32 @@ Cada checkpoint registra o que foi entregue. As execuções foram feitas sobre o
 dado real (fora do repositório); aqui os volumes estão arredondados e os
 resultados, em contagens de reconciliação, percentuais e tempos.
 
+## Fatia 3 — o Job na Databricks Free Edition (26/10/2026)
+
+Bundle (`databricks.yml`) validado e implantado: schema `workspace.lab`, Volume
+`landing` e o Job `fatia1-clientes` com 4 tarefas encadeadas em serverless,
+rodando a fatia 1 sobre a amostra sintética.
+
+| Execução | landing | bronze | silver | gold | Total |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 1ª (tabelas novas) | 19,8 s | 51,9 s | 44,1 s | 24,2 s | **141,6 s** |
+| 2ª (mesmo arquivo) | 17,5 s | 10,6 s | 30,6 s | 19,7 s | **80,4 s** |
+
+- **Reconciliação: 12 de 12** na tabela `workspace.lab.reconciliacao_fatia1`
+  (a tarefa gold falharia o Job se algum indicador não batesse).
+- **Idempotência no Unity Catalog:** na 2ª execução a bronze reconheceu o lote
+  (continua com 185 linhas e 1 lote) e o MERGE da silver inseriu, atualizou,
+  apagou e copiou **0 linhas**, sem gravar arquivo (`DESCRIBE HISTORY`: versão 1,
+  `MERGE`, todas as métricas 0) — os deletion vectors funcionando igual ao
+  contêiner.
+- **O mesmo código** do contêiner: o pacote `src/estudo` grava por nome de tabela
+  (`estudo/destino.py`), e os notebooks de `databricks/` só leem os parâmetros e
+  chamam o pacote.
+- **Tempo:** quase todo o tempo é custo fixo de subir o serverless e de criar ou
+  abrir as tabelas no catálogo — a amostra tem 185 linhas. A 1ª execução é mais
+  lenta porque cria as tabelas; a bronze da 2ª cai de 52 s para 11 s porque só
+  confere o lote. Não é medida de desempenho do Spark, e sim da orquestração.
+
 ## Fatia 2 — livro fiscal de saída (~1,6 milhão de itens) e janela `replaceWhere`
 
 **Execução:** carga completa (~1,6 milhão de itens, ~480 mil notas, 30

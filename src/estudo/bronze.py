@@ -18,10 +18,11 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
-from delta.tables import DeltaTable
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql import functions as F
 from pyspark.sql.types import StringType, StructField, StructType
+
+from estudo import destino as d
 
 COLUNAS = (
     "revenda", "codigo_cliente", "nome", "nome_fantasia", "cidade", "cnpj_cpf",
@@ -83,9 +84,9 @@ def ingerir(spark: SparkSession, caminho_csv: Path, destino: str) -> ResultadoBr
     if linhas != manifesto["linhas"]:
         raise ValueError(f"o arquivo tem {linhas} linhas e o manifesto diz {manifesto['linhas']}")
 
-    if DeltaTable.isDeltaTable(spark, destino):
-        ja = spark.read.format("delta").load(destino).where(F.col("_lote") == lote).limit(1).count() > 0
+    if d.existe(spark, destino):
+        ja = d.ler(spark, destino).where(F.col("_lote") == lote).limit(1).count() > 0
         if ja:
             return ResultadoBronze(lote, linhas, 0, True)
-    df.write.format("delta").mode("append").save(destino)
+    d.salvar(df.write.format("delta").mode("append"), destino)
     return ResultadoBronze(lote, linhas, linhas, False)

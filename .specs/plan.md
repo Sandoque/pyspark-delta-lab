@@ -78,6 +78,18 @@ local serve ao editor e a experimentos.
 - O Dockerfile instala pelo `uv.lock` (`uv sync --frozen` em `/opt/venv`, fora do
   bind mount de `/work`).
 
+## Databricks Free Edition (fatia 3)
+
+| Decisão | Por quê |
+| --- | --- |
+| Destino por **nome de tabela** no Unity Catalog (`workspace.lab.silver_clientes`), não por caminho | No Databricks, tabela gerenciada é o normal; `estudo/destino.py` escolhe `saveAsTable`/`forName` ou `save`/`forPath` pela forma do destino, e o pipeline é o mesmo nos dois lugares |
+| Notebooks finos em `databricks/` chamando o pacote `src/estudo` | A regra fica em código testado no contêiner; o notebook só lê parâmetros e chama |
+| Bundle (`databricks.yml`) com schema, Volume e Job | Infra e orquestração versionadas e reproduzíveis (`bundle deploy`), não cliques na interface |
+| Tarefa `landing` copiando a amostra do bundle para o Volume | Simula a chegada do arquivo sem `fs cp` manual; num caso real seria Auto Loader observando o Volume |
+| Lote e dia passados por *task values* | As tarefas ficam desacopladas, mas a silver processa exatamente o lote que a bronze ingeriu |
+| Serverless, sem `cache()` nem `sparkContext` | A Free Edition só tem serverless, que não aceita `persist` nem o `SparkContext` |
+| A gold falha o Job se a reconciliação não bater, e grava `reconciliacao_fatia1` | Qualidade como portão da execução, com a evidência numa tabela consultável |
+
 ## Testes
 
 Unitários com Spark local (`local[2]`) e DataFrames pequenos; ponta a ponta sobre

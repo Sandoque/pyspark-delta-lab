@@ -1,0 +1,72 @@
+# Databricks Asset Bundle da fatia 1 (fatia 3 do plano: orquestração na Free Edition).
+#
+# Cria o schema e o Volume no Unity Catalog e o Job de 4 tarefas encadeadas
+# (landing → bronze → silver → gold), em computação serverless. O código das
+# tarefas é o pacote src/estudo, o mesmo testado no contêiner.
+#
+#   databricks bundle validate -p lab
+#   databricks bundle deploy   -p lab
+#   databricks bundle run fatia1_clientes -p lab
+#
+# O endereço do workspace vem do perfil do CLI (databricks auth login --profile lab),
+# não deste arquivo.
+
+bundle:
+  name: pyspark-delta-lab
+
+variables:
+  catalogo:
+    description: Catálogo do Unity Catalog
+    default: workspace
+  esquema:
+    description: Schema das tabelas e do Volume
+    default: lab
+
+resources:
+  schemas:
+    lab:
+      catalog_name: ${var.catalogo}
+      name: ${var.esquema}
+      comment: PySpark + Delta Lab — amostra sintética da fatia 1
+
+  volumes:
+    landing:
+      catalog_name: ${var.catalogo}
+      schema_name: ${resources.schemas.lab.name}
+      name: landing
+      volume_type: MANAGED
+      comment: Arquivos de chegada (CSV, manifesto e seed do de/para)
+
+  jobs:
+    fatia1_clientes:
+      name: fatia1-clientes
+      description: Cadastro de clientes da revenda XPTO (amostra sintética), reconciliado com os controles do SQL
+      max_concurrent_runs: 1
+      parameters:
+        - name: catalogo
+          default: ${var.catalogo}
+        - name: esquema
+          default: ${resources.schemas.lab.name}
+      tasks:
+        - task_key: landing
+          notebook_task:
+            notebook_path: ./databricks/00_landing.py
+        - task_key: bronze
+          depends_on:
+            - task_key: landing
+          notebook_task:
+            notebook_path: ./databricks/01_bronze.py
+        - task_key: silver
+          depends_on:
+            - task_key: bronze
+          notebook_task:
+            notebook_path: ./databricks/02_silver.py
+        - task_key: gold
+          depends_on:
+            - task_key: silver
+          notebook_task:
+            notebook_path: ./databricks/03_gold.py
+
+targets:
+  free:
+    default: true

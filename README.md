@@ -30,7 +30,7 @@ banco (SELECT, READ ONLY) ──► landing (CSV + manifesto sha256 + controles 
 | Janela de 3 meses × carga completa | **−92,6% de linhas, −65% de tempo**, só **3 de 30** arquivos Parquet reescritos e 27 meses intactos |
 | MERGE com deletion vectors | Reexecução sem mudança: **0 arquivos** reescritos (sem DV: a tabela inteira) |
 | `float32` × `DECIMAL(15,2)` | O `float32` perdeu os centavos em **30 de 30** meses |
-| Testes | 32 testes (unitários e ponta a ponta) e **10 de 10 mutações mortas** |
+| Testes | 39 testes (unitários, ponta a ponta por caminho e por tabela) e **10 de 10 mutações mortas** |
 | Spark × SQL | No cadastro (~30 mil linhas) o SQL foi **~5× mais rápido**. No livro fiscal, a agregação mensal levou 5,5 s no Spark contra 15,7 s no MySQL — um indício, não uma regra (ver [checkpoints](.specs/checkpoints.md)) |
 
 **Conclusão do teste de uso:** a maior lição não foi a ferramenta, foi **processar
@@ -78,6 +78,29 @@ JupyterLab em http://127.0.0.1:8888 e Spark UI em http://127.0.0.1:4040:
 docker compose up
 ```
 
+## Na Databricks Free Edition
+
+O mesmo pipeline roda como **Job de 4 tarefas** (landing → bronze → silver → gold)
+em serverless, com as tabelas no Unity Catalog (`workspace.lab.*`). Schema, Volume
+e Job estão definidos como código em [`databricks.yml`](databricks.yml)
+(Databricks Asset Bundle); os notebooks de [`databricks/`](databricks/) só chamam
+o pacote `src/estudo`.
+
+```bash
+databricks auth login --host https://SEU-WORKSPACE.cloud.databricks.com --profile lab
+```
+
+```bash
+databricks bundle deploy -p lab
+```
+
+```bash
+databricks bundle run fatia1_clientes -p lab
+```
+
+A tarefa `gold` reconcilia com os controles do manifesto, grava
+`workspace.lab.reconciliacao_fatia1` e **falha o Job** se algum indicador não bater.
+
 ## Com um banco de verdade
 
 Os exportadores rodam fora do contêiner, num Python com `sqlalchemy` e o driver do
@@ -106,3 +129,4 @@ SQL no mesmo retrato do dado; os jobs reconciliam contra esses controles.
 | `tests/` | pytest com Spark local |
 | `notebooks/` | exploração no JupyterLab |
 | `docker/` | imagem com Python 3.12, Java 17 e as dependências do `uv.lock` |
+| `databricks/`, `databricks.yml` | notebooks e o bundle do Job na Databricks Free Edition |
