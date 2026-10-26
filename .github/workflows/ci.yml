@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  testes:
+    name: Testes, mutação e fatia 1 com a amostra sintética
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONPATH: src
+    steps:
+      - uses: actions/checkout@v4
+
+      # Spark 4.0 roda em Java 17, como no contêiner.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Dependências travadas (uv.lock)
+        run: uv sync --frozen
+
+      # Os jars do Delta vêm do Maven na primeira sessão Spark; o cache evita baixar a cada execução.
+      - name: Cache dos jars do Delta
+        uses: actions/cache@v4
+        with:
+          path: ~/.ivy2.5.2
+          key: ivy-delta-${{ hashFiles('uv.lock') }}
+
+      - name: Testes (unitários, ponta a ponta por caminho e por tabela)
+        run: uv run pytest -q
+
+      # Sabota uma regra por vez e exige que algum teste falhe: sai com erro se uma mutação sobreviver.
+      - name: Prova por mutação
+        run: uv run python scripts/testar_mutacoes.py
+
+      # Sai com erro se a conta das camadas não fechar ou se a reconciliação não bater.
+      - name: Fatia 1 ponta a ponta com a amostra sintética
+        run: uv run python jobs/fatia1_clientes.py --arquivo seeds/amostra_sintetica/clientes_xpto_sintetico.csv

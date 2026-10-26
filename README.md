@@ -1,5 +1,7 @@
 # PySpark + Delta Lab
 
+[![CI](https://github.com/Sandoque/pyspark-delta-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/Sandoque/pyspark-delta-lab/actions/workflows/ci.yml)
+
 Estudo de **PySpark 4.0 e Delta Lake 4.0** sobre problemas reais de um pipeline de
 dados de uma distribuidora (aqui, **revenda XPTO**), feito também como **teste de
 uso**: cada resultado foi **reconciliado com o SQL de produção** e cada etapa,
